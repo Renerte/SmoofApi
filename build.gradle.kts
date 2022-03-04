@@ -1,5 +1,6 @@
 plugins {
     id("fabric-loom")
+    id("maven-publish")
     val kotlinVersion: String by System.getProperties()
     kotlin("jvm").version(kotlinVersion)
 }
@@ -47,5 +48,22 @@ tasks {
         sourceCompatibility = javaVersion
         targetCompatibility = javaVersion
         withSourcesJar()
+    }
+}
+publishing {
+    repositories {
+        maven {
+            name = "Repsy"
+            url = uri("https://repo.repsy.io/mvn/renerte/fabric")
+            credentials {
+                username = project.findProperty("respy.user") as String? ?: System.getenv("USERNAME")
+                password = project.findProperty("respy.key") as String? ?: System.getenv("PASSWORD")
+            }
+        }
+    }
+    publications {
+        register<MavenPublication>("gpr") {
+            from(components["java"])
+        }
     }
 }
